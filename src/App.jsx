@@ -31,7 +31,7 @@ const KATEGORILER = ["Anaokulu","Kreş","Oyun Alanı","Workshop & Etkinlik","İl
 const TR_ILLER = ["Adana","Adıyaman","Afyonkarahisar","Ağrı","Ankara","Antalya","Artvin","Aydın","Balıkesir","Bitlis","Bolu","Burdur","Bursa","Çanakkale","Çorum","Denizli","Diyarbakır","Düzce","Edirne","Elazığ","Erzincan","Erzurum","Eskişehir","Gaziantep","Giresun","Hatay","Iğdır","Isparta","İstanbul","İzmir","Kahramanmaraş","Karabük","Karaman","Kars","Kastamonu","Kayseri","Kilis","Kırıkkale","Kırklareli","Kırşehir","Kocaeli","Konya","Kütahya","Malatya","Manisa","Mardin","Mersin","Muğla","Muş","Nevşehir","Niğde","Ordu","Osmaniye","Rize","Sakarya","Samsun","Şanlıurfa","Siirt","Sinop","Şırnak","Sivas","Tekirdağ","Tokat","Trabzon","Tunceli","Uşak","Van","Yalova","Yozgat","Zonguldak"];
 
 const fmt = n => n>=1000?`₺${(n/1000).toFixed(0)}K`:`₺${n}`;
-const today = () => new Date().toISOString().split("T")[0];
+//const today = () => new Date().toISOString().split("T")[0];
 
 // ─── DB ───────────────────────────────────────────────────────────────────────
 async function dbGetLeads() {
