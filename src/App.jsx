@@ -187,69 +187,6 @@ function LeadForm({editLead, onClose, onSave}) {
   );
 }
 
-// ─── FIRMA BUL ────────────────────────────────────────────────────────────────
-function FirmaBul({onAdd}) {
-  const [il,setIl]=useState("İstanbul");
-  const [kategori,setKategori]=useState("Anaokulu");
-  const [loading,setLoading]=useState(false);
-  const [firmalar,setFirmalar]=useState([]);
-  const [added,setAdded]=useState({});
-  const [error,setError]=useState("");
-
-  async function ara(){
-    setLoading(true);setFirmalar([]);setAdded({});setError("");
-    const prompt=`${il} ilindeki ${kategori} firmalarını listele. SADECE JSON:\n[{"firma":"","yetkili":"","telefon":"","whatsapp":"","email":"","adres":"","notlar":""}]\n10 firma, gerçekçi Türkçe isimler, ${il} telefon kodları.`;
-    try{
-      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
-      const data=await res.json();
-      const text=data.content?.map(i=>i.text||"").join("")||"";
-      setFirmalar(JSON.parse(text.replace(/```json|```/g,"").trim()));
-    }catch(e){setError("API bağlantısı gerekli.");}
-    setLoading(false);
-  }
-
-  return (
-    <div>
-      <div style={{display:"flex",gap:12,marginBottom:18,flexWrap:"wrap",alignItems:"flex-end"}}>
-        <div style={{display:"flex",flexDirection:"column",gap:5}}>
-          <label style={{fontSize:11,color:C.smoke}}>İL</label>
-          <select value={il} onChange={e=>setIl(e.target.value)} style={{...inpSt,width:160,cursor:"pointer"}}>{TR_ILLER.map(i=><option key={i}>{i}</option>)}</select>
-        </div>
-        <div style={{display:"flex",flexDirection:"column",gap:5}}>
-          <label style={{fontSize:11,color:C.smoke}}>KATEGORİ</label>
-          <select value={kategori} onChange={e=>setKategori(e.target.value)} style={{...inpSt,cursor:"pointer"}}>{KATEGORILER.map(k=><option key={k}>{k}</option>)}</select>
-        </div>
-        <button onClick={ara} disabled={loading} style={bs(C.navy,"#fff",{padding:"10px 24px",alignSelf:"flex-end",opacity:loading?0.7:1})}>{loading?"⏳ Aranıyor...":"🔍 Firma Ara"}</button>
-      </div>
-      {error&&<div style={{color:"#E74C3C",padding:12,background:"#E74C3C11",borderRadius:6,marginBottom:12}}>{error}</div>}
-      {loading&&<div style={{textAlign:"center",padding:48,color:C.smoke}}><div style={{fontSize:36,marginBottom:8}}>🔍</div><div>{il} · {kategori} aranıyor...</div></div>}
-      {firmalar.length>0&&(
-        <div style={{display:"flex",flexDirection:"column",gap:10}}>
-          <div style={{fontSize:12,color:C.smoke,marginBottom:4}}>{firmalar.length} FİRMA — {il} · {kategori}</div>
-          {firmalar.map((f,i)=>(
-            <div key={i} style={{...cardSt({padding:"14px 16px",display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:16,border:`1px solid ${added[i]?C.green:C.border}`})}}>
-              <div style={{flex:1}}>
-                <div style={{fontWeight:700,fontSize:14,marginBottom:4,color:C.navy}}>{f.firma}</div>
-                {f.adres&&<div style={{fontSize:12,color:C.smoke,marginBottom:4}}>📍 {f.adres}</div>}
-                <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-                  {f.telefon&&<span style={{fontSize:12,color:C.smoke}}>📞 {f.telefon}</span>}
-                  {f.email&&<span style={{fontSize:12,color:C.smoke}}>✉ {f.email}</span>}
-                </div>
-                {f.notlar&&<div style={{fontSize:12,color:C.smoke,marginTop:4,fontStyle:"italic"}}>{f.notlar}</div>}
-              </div>
-              <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                {f.whatsapp&&<a href={`https://wa.me/${(f.whatsapp||"").replace(/\D/g,"")}`} target="_blank" rel="noreferrer" style={{...ob("#25D366"),textDecoration:"none",textAlign:"center"}}>WA</a>}
-                <button onClick={()=>{onAdd({firma:f.firma,yetkili:f.yetkili||"",kategori,il,ilce:"",telefon:f.telefon||"",whatsapp:f.whatsapp||f.telefon||"",email:f.email||"",adres:f.adres||"",notlar:f.notlar||"",stage:"Potansiyel",potansiyel_ciro:0});setAdded(a=>({...a,[i]:true}));}} disabled={added[i]} style={bs(added[i]?C.green+"33":C.navy,added[i]?C.green:"#fff",{border:added[i]?`1px solid ${C.green}`:"none"})}>{added[i]?"✓ Eklendi":"+ Ekle"}</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-      {!loading&&firmalar.length===0&&<div style={{textAlign:"center",padding:60,color:C.smoke}}><div style={{fontSize:48,marginBottom:12}}>🔍</div><div>İl ve kategori seç, <b style={{color:C.navy}}>Firma Ara</b>'ya bas</div></div>}
-    </div>
-  );
-}
-
 // ─── CRM ─────────────────────────────────────────────────────────────────────
 function CRMView({leads, loadLeads}) {
   const [sub,setSub]=useState("pipeline");
@@ -289,13 +226,11 @@ function CRMView({leads, loadLeads}) {
       {showForm&&<LeadForm editLead={editLead} onClose={()=>{setShowForm(false);setEditLead(null);}} onSave={handleSave}/>}
 
       <div style={{display:"flex",gap:8,marginBottom:18,borderBottom:`1px solid ${C.border}`,paddingBottom:12}}>
-        {[["pipeline","Pipeline"],["liste","Liste"],["firma","🔍 Firma Bul"]].map(([k,v])=>(
+        {[["pipeline","Pipeline"],["liste","Liste"]].map(([k,v])=>(
           <button key={k} onClick={()=>setSub(k)} style={bs(sub===k?C.navy:"transparent",sub===k?"#fff":C.smoke,{border:`1px solid ${sub===k?C.navy:C.border}`})}>{v}</button>
         ))}
         <button onClick={()=>{setEditLead(null);setShowForm(true);}} style={bs(C.green,"#fff",{marginLeft:"auto"})}>+ Yeni Firma</button>
       </div>
-
-      {sub==="firma"&&<FirmaBul onAdd={async(l)=>{await dbInsert(l);await loadLeads();}}/>}
 
       {(sub==="pipeline"||sub==="liste")&&(
         <div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
