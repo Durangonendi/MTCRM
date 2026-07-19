@@ -459,7 +459,7 @@ export default function MTCRM() {
       </div>
 
       <div style={{position:"fixed",bottom:8,right:12,fontSize:11,color:"rgba(27,46,75,0.3)",pointerEvents:"none",zIndex:40}}>
-        Duran Gönendi
+        Shadow Master
       </div>
     </div>
   );
