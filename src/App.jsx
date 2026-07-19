@@ -457,6 +457,10 @@ export default function MTCRM() {
         {active==="dashboard"&&<Dashboard leads={leads}/>}
         {active==="crm"&&<CRMView leads={leads} loadLeads={loadLeads}/>}
       </div>
+
+      <div style={{position:"fixed",bottom:8,right:12,fontSize:11,color:"rgba(27,46,75,0.3)",pointerEvents:"none",zIndex:40}}>
+        Duran Gönendi
+      </div>
     </div>
   );
 }
